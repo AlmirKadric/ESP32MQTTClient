@@ -303,6 +303,13 @@ bool ESP32MQTTClient::loopStart()
     bool success = false;
     esp_err_t err = ESP_OK;
 
+	if (_mqtt_client != nullptr) {
+		if (!loopStop()) {
+			ESP_LOGI(TAG, "Failed to cleanup stopped loop");
+			return false;
+		}
+	}
+
     if (_mqttUri != nullptr)
     {
         if (_enableSerialLogs)
@@ -384,6 +391,16 @@ bool ESP32MQTTClient::loopStart()
     }
 
     return success;
+}
+
+bool ESP32MQTTClient::loopStop()
+{
+	if (!esp_mqtt_client_destroy(_mqtt_client) == ESP_OK) {
+		return false;
+	}
+
+	_mqtt_client = nullptr;
+	return true;
 }
 
 /**

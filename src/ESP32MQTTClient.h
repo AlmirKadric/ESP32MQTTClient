@@ -4,7 +4,7 @@
 #include <string>
 #include <mqtt_client.h>
 #include <functional>
-#include "esp_log.h"         
+#include "esp_log.h"
 #include "esp_idf_version.h" // check IDF version
 
 void onMqttConnect(esp_mqtt_client_handle_t client);
@@ -32,9 +32,9 @@ class ESP32MQTTClient
 {
 private:
     esp_mqtt_client_config_t _mqtt_config; // C so different naming
-    esp_mqtt_client_handle_t _mqtt_client;
+    esp_mqtt_client_handle_t _mqtt_client = nullptr;
     MessageReceivedCallbackWithTopic _globalMessageReceivedCallback = nullptr;
-	
+
 
     // MQTT related
     bool _mqttConnected;
@@ -121,18 +121,19 @@ public:
         _mqttPassword = password;
     };
 
-    inline bool isConnected() const { return _mqttConnected; };    
+    inline bool isConnected() const { return _mqttConnected; };
     inline bool isMyTurn(esp_mqtt_client_handle_t client) const { return _mqtt_client==client; }; // Return true if mqtt is connected
 
     inline const char *getClientName() { return _mqttClientName; };
     inline const char *getURI() { return _mqttUri; };
 
     void printError(esp_mqtt_error_codes_t *error_handle);
-    
+
     bool loopStart();
+    bool loopStop();
 
     void onEventCallback(esp_mqtt_event_handle_t event);
-    
+
 private:
     void onMessageReceivedCallback(const char *topic, char *payload, unsigned int length);
     bool mqttTopicMatch(const std::string &topic1, const std::string &topic2);
