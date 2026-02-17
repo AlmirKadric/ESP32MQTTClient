@@ -8,6 +8,7 @@
 #include "esp_idf_version.h" // check IDF version
 
 void onMqttConnect(esp_mqtt_client_handle_t client);
+void onMqttDisconnect(esp_mqtt_client_handle_t client);
 #if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0)
 esp_err_t handleMQTT(esp_mqtt_event_handle_t event);
 #else  // IDF CHECK
@@ -93,6 +94,7 @@ public:
     bool subscribe(const std::string &topic, MessageReceivedCallbackWithTopic messageReceivedCallback, uint8_t qos = 0);
     bool unsubscribe(const std::string &topic);                                       // Unsubscribes from the topic, if it exists, and removes it from the CallbackList.
     void setKeepAlive(uint16_t keepAliveSeconds);                                // Change the keepalive interval (15 seconds by default)
+    void setNetworkTimeout(uint16_t timeoutMilliseconds);
     inline void setMqttClientName(const char *name) { _mqttClientName = name; }; // Allow to set client name manually (must be done in setup(), else it will not work.)
     inline void setURI(const char *uri, const char *username = "", const char *password = "")
     { // Allow setting the MQTT info manually (must be done in setup())

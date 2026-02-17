@@ -233,6 +233,15 @@ void ESP32MQTTClient::setKeepAlive(uint16_t keepAliveSeconds)
 #endif // IDF CHECK
 }
 
+void ESP32MQTTClient::setNetworkTimeout(uint16_t timeoutMilliseconds)
+{
+#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0)
+    _mqtt_config.network_timeout_ms = timeoutMilliseconds;
+#else  // IDF CHECK
+    _mqtt_config.network.timeout_ms = timeoutMilliseconds;
+#endif // IDF CHECK
+}
+
 // ================== Private functions ====================-
 
 void ESP32MQTTClient::printError(esp_mqtt_error_codes_t *error_handle)
@@ -395,6 +404,10 @@ bool ESP32MQTTClient::loopStart()
 
 bool ESP32MQTTClient::loopStop()
 {
+	if (_mqtt_client == nullptr) {
+		return true;
+	}
+
 	if (!esp_mqtt_client_destroy(_mqtt_client) == ESP_OK) {
 		return false;
 	}
@@ -517,6 +530,7 @@ void ESP32MQTTClient::onEventCallback(esp_mqtt_event_handle_t event)
         case MQTT_EVENT_DISCONNECTED:
             ESP_LOGI("ESP32MQTTClient", "MQTT_EVENT_DISCONNECTED");
             setConnectionState(false);
+            onMqttDisconnect(_mqtt_client);
             if (_enableSerialLogs)
                 ESP_LOGW(TAG, "MQTT -->> %s disconnected (%lus)", _mqttUri, (unsigned long)(esp_timer_get_time() / 1000000));
             break;
