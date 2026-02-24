@@ -123,7 +123,7 @@ public:
         _mqttPassword = password;
     };
 
-    inline bool isConnected() const { return _mqttConnected; };
+    inline bool isConnected() const { return _mqtt_client != nullptr && _mqttConnected; };
     inline bool isMyTurn(esp_mqtt_client_handle_t client) const { return _mqtt_client==client; }; // Return true if mqtt is connected
 
     inline const char *getClientName() { return _mqttClientName; };
