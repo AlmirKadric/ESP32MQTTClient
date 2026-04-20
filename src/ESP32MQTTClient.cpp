@@ -476,8 +476,7 @@ void ESP32MQTTClient::onMessageReceivedCallback(const char *topic, char *payload
     std::string payloadStr;
     if (payload)
     {
-        payload[strTerminationPos] = '\0';
-        payloadStr = std::string(payload);
+		payloadStr.assign(payload, payload + length);
     }
     else
     {
